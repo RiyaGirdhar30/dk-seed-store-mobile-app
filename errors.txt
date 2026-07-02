@@ -1,0 +1,742 @@
+// create alert for so that user cant buy or wishlist any item without doing login
+
+
+//productDeatils.jsx code
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Alert,   //->
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useWishlist } from "../contexts/wishlistContext";
+import { useBag } from "../contexts/bagContext";
+import { useUser } from "../contexts/userContext"; //->
+import Toast from "react-native-toast-message";
+
+export default function ProductDetail() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+
+  const { bag, addToBag } = useBag();
+  const {user}=useUser();   //->
+  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+
+  const { id, name, price, img } = params ?? {};
+
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [sizeError, setSizeError] = useState(false);
+
+  const calculatedPrice =
+    selectedSize === "Half KG" ? Number(price) / 2 : Number(price);
+
+  const isInWishlist = wishlist.some((item) => String(item.id) === String(id));
+
+  const handleToggleWishlist = () => {
+    if (isInWishlist) {
+      removeFromWishlist(id);
+      Toast.show({ type: "info", text1: `${name} removed from wishlist` });
+    } else {
+      addToWishlist({
+        id,
+        name,
+        price,
+        img: { uri: img }, // backend image ✔
+      });
+      Toast.show({ type: "success", text1: `${name} added to wishlist` });
+    }
+  };
+
+  if (!id) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.center}>
+          <Text>Product details not available.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+// if (!user) {
+//   Alert.alert("Login Required", "Please login to add items to your wishlist.");
+//   return;
+// }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* HEADER */}
+        <View style={styles.topRow}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={22} color="#22543d" />
+          </TouchableOpacity>
+
+          <View style={styles.topRightIcons}>
+            <TouchableOpacity
+              style={styles.iconBtn}
+              onPress={() => router.push("/wishlist")}
+            >
+              <Ionicons name="heart-outline" size={26} color="#22543d" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.iconBtn}
+              onPress={() => router.push("/bag")}
+            >
+              <Ionicons name="bag-outline" size={26} color="#22543d" />
+              {bag.length > 0 && (
+                <View style={styles.bagBadge}>
+                  <Text style={styles.bagBadgeText}>{bag.length}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* PRODUCT IMAGE - backend image ✔ */}
+        <Image
+          source={{ uri: img }}
+          style={styles.productImage}
+          resizeMode="contain"
+        />
+
+        {/* INFO BOX */}
+        <View style={styles.infoBox}>
+          <View style={styles.infoRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.productName}>{name}</Text>
+              <Text style={styles.price}>₹{price}/kg</Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={handleToggleWishlist}
+              style={styles.infoWishlistBtn}
+            >
+              <Ionicons
+                name={isInWishlist ? "heart" : "heart-outline"}
+                size={24}
+                color={isInWishlist ? "red" : "#22543d"}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* SIZE SELECTION */}
+          <Text style={styles.sizeLabel}>Choose size:</Text>
+
+          <View
+            style={[
+              styles.sizeRow,
+              sizeError && {
+                borderWidth: 1,
+                borderColor: "red",
+                padding: 6,
+                borderRadius: 10,
+              },
+            ]}
+          >
+            {["Half KG", "Full KG"].map((size) => (
+              <TouchableOpacity
+                key={size}
+                style={[
+                  styles.sizeBtn,
+                  selectedSize === size && styles.sizeBtnActive,
+                ]}
+                onPress={() => {
+                  setSelectedSize(size);
+                  setSizeError(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.sizeBtnText,
+                    selectedSize === size && styles.sizeBtnTextActive,
+                  ]}
+                >
+                  {size}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* ADD TO BAG */}
+          <TouchableOpacity
+            style={styles.addToBagBtn}
+            onPress={() => {
+              if (!selectedSize) {
+                setSizeError(true);
+                Toast.show({
+                  type: "error",
+                  text1: "Please select a size",
+                });
+                return;
+              }
+
+             addToBag({
+  id,
+  // name,
+  // price: calculatedPrice,
+  // img: { uri: img },
+  // qty: 1,
+  // size: selectedSize,
+});
+
+
+              Toast.show({
+                type: "success",
+                text1: `${name} added to bag`,
+              });
+
+              setTimeout(() => {
+                router.push("/bag");
+              }, 600);
+            }}
+          >
+            <Text style={styles.addToBagText}>Add to Bag</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+/* STYLES */
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#f2f9f0" },
+  scrollContent: { padding: 16 },
+
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  backBtn: {
+    padding: 8,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+  },
+
+  topRightIcons: { flexDirection: "row", gap: 12 },
+
+  iconBtn: {
+    backgroundColor: "#fff",
+    padding: 8,
+    borderRadius: 12,
+  },
+
+  productImage: { width: "100%", height: 260 },
+
+  infoBox: {
+    backgroundColor: "#fff",
+    padding: 18,
+    borderRadius: 14,
+  },
+
+  infoRow: { flexDirection: "row", alignItems: "center" },
+
+  productName: { fontSize: 22, fontWeight: "700" },
+  price: { fontSize: 18, marginBottom: 6 },
+
+  infoWishlistBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  sizeLabel: { marginTop: 12 },
+  sizeRow: { flexDirection: "row", marginBottom: 16 },
+  sizeBtn: {
+    flex: 1,
+    borderWidth: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginRight: 10,
+  },
+  sizeBtnActive: { backgroundColor: "#22543d" },
+  sizeBtnText: { color: "#22543d" },
+  sizeBtnTextActive: { color: "#fff" },
+
+  addToBagBtn: {
+    backgroundColor: "#4a7c59",
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  addToBagText: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "600",
+  },
+
+  bagBadge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "#1b4332",
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  bagBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "700",
+  },
+
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+});
+
+
+
+
+
+
+//checkout.jsx code
+
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useBag } from "../contexts/bagContext";
+import { useUser } from "../contexts/userContext";
+
+export default function Checkout() {
+  const router = useRouter();
+  const { bag } = useBag();
+  const { user } = useUser();
+
+  const FIXED_USER_ID = "693318d1e100ef27146bebc4"; // ⭐ Use this until login is ready
+
+  const [paymentMode, setPaymentMode] = useState(null);
+
+  const subtotal = bag.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const shipping = subtotal > 300 ? 0 : 40;
+  const discount = subtotal > 500 ? 50 : 0;
+  const total = subtotal + shipping - discount;
+
+  // ============================
+  //        HANDLE PAYMENT
+  // ============================
+  const handlePayment = async () => {
+    if (!paymentMode) {
+      Alert.alert("Select Payment Method", "Please choose a payment method.");
+      return;
+    }
+
+    try {
+      const orderData = {
+        user: user?._id || user?.id || FIXED_USER_ID, // ⭐ always present
+        products: bag.map((item) => ({
+          product: item.id,
+          quantity: item.qty,
+        })),
+        totalAmount: Number(total),
+        address: "Village Muktsar, Punjab",
+        paymentMethod: paymentMode,
+        isPaid: paymentMode !== "COD",
+      };
+
+      console.log("ORDER SENDING:", orderData);
+
+      const res = await fetch("http://172.21.115.85:5000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await res.json();
+      console.log("ORDER RESPONSE:", data);
+
+      if (!res.ok) {
+        Alert.alert("Order Failed", data.message || "Could not create order.");
+        return;
+      }
+
+      // Redirect to payment screen with orderId
+      router.push({
+        pathname: "/payment",
+        params: {
+          paymentMode,
+          total,
+          orderId: data._id,
+        },
+      });
+    } catch (error) {
+      console.log("Order Create Error:", error);
+      Alert.alert("Error", "Something went wrong while creating order.");
+    }
+  };
+
+//   if (!user) {
+//   Alert.alert("Login Required", "Please login to continue.");
+//   return;
+// }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={24} color="#22543d" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Checkout</Text>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* ADDRESS */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Delivery Address</Text>
+          <Text style={styles.addressText}>
+            Riya Girdhar{"\n"}
+            Sri Muktsar Sahib, Punjab{"\n"}
+            India - 152026
+          </Text>
+        </View>
+
+        {/* ORDER SUMMARY */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Order Summary</Text>
+          {bag.map((item) => (
+            <View key={item.id} style={styles.itemRow}>
+              <Image source={item.img} style={styles.itemImg} />
+              <View style={{ flex: 1 }}>
+                <Text>{item.name}</Text>
+                <Text>Qty: {item.qty}</Text>
+              </View>
+              <Text>₹{item.price * item.qty}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* BILL */}
+        <View style={styles.card}>
+          <Text>Subtotal: ₹{subtotal}</Text>
+          <Text>Shipping: ₹{shipping}</Text>
+          <Text>Discount: -₹{discount}</Text>
+          <Text style={{ fontWeight: "bold", marginTop: 5 }}>
+            Total: ₹{total}
+          </Text>
+        </View>
+
+        {/* PAYMENT OPTIONS */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Select Payment Method</Text>
+
+          {["COD", "UPI", "CARD"].map((mode) => (
+            <TouchableOpacity
+              key={mode}
+              style={[
+                styles.paymentOption,
+                paymentMode === mode && styles.activePayment,
+              ]}
+              onPress={() => setPaymentMode(mode)}
+            >
+              <Text
+                style={{
+                  color: paymentMode === mode ? "#fff" : "#000",
+                  fontWeight: "700",
+                }}
+              >
+                {mode}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* PAY BUTTON */}
+      <TouchableOpacity style={styles.payBtn} onPress={handlePayment}>
+        <Text style={styles.payTxt}>Proceed to Payment</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: "#eafbe7", padding: 14 },
+
+  header: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
+
+  backBtn: { padding: 10 },
+
+  title: { fontSize: 22, fontWeight: "700", marginLeft: 10 },
+
+  card: {
+    backgroundColor: "#fff",
+    padding: 14,
+    marginTop: 12,
+    borderRadius: 14,
+  },
+
+  sectionTitle: { fontWeight: "700", fontSize: 16, marginBottom: 6 },
+
+  addressText: { marginTop: 5, color: "#333" },
+
+  itemRow: { flexDirection: "row", alignItems: "center", marginTop: 10 },
+
+  itemImg: { width: 50, height: 50, marginRight: 10, borderRadius: 8 },
+
+  paymentOption: {
+    padding: 14,
+    backgroundColor: "#ddd",
+    marginTop: 10,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  activePayment: {
+    backgroundColor: "#1b4332",
+  },
+
+  payBtn: {
+    backgroundColor: "#1b4332",
+    padding: 15,
+    borderRadius: 15,
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  payTxt: { color: "#fff", fontWeight: "700", fontSize: 16 },
+});
+
+
+
+//so these are the logic inside code for alert
+
+
+
+
+
+
+//token not defined error
+//in backend authRoutes
+//in frontend userContext
+//signup.jsx 
+///signin.jsx 
+//done this
+
+
+
+//for previous acc still visible after logout
+profile.jsx code ->again
+signin.jsx code
+signup.jsx code
+userContext code ->again
+
+so still when we try to logout,,the previous account is still seen..so now continue from that..
+and where we left earlier was addAuthmiddleware something like this..
+
+//can try the suggested one's or first make the first two code check...
+
+now just check logout acc still there after logging out or not... main one ,,changes in signup,signin,profile,userContext
+
+
+
+///now just check that admin account working and also logout button in profile not working inside settings working
+
+
+//      TO DO
+
+
+//for alert we have changed
+home
+categories
+productDetails
+signin 
+insert new folder file utils
+
+
+//login screen is creating prblm,,even on creating account it asks user to login..
+
+//also once confirm while needing for login screen we actual send signup/signin any or login file there that,..bcoz login was created earlier now dont know its being used or signup/sigin are only used.
+
+
+
+// TO DOOOOOOOOOOOOOOOOOOOOOO
+
+
+
+//and also left sliding not working from categories to home back 
+
+and back arrow not working from bag to productDetails
+
+
+//TO DO NOW
+
+// we can like u can place a button in wishlist like select all items or like any one
+
+//after ordering see bag tab gets empty or not
+
+//left sliding still pending
+
+//and back arrow not working from bag to productDetails ->pending
+
+
+
+//12-12-2025
+so today we have to like add and like make setup for all images in home or categories 
+
+next range dynamic half/Full
+
+and also ask if any images such as categories,banners they dont need to be on database,,will be visible to users like this? -> upload on cloudinary only 
+
+in settings address chnge,edit profile
+
+whts use of admin side to order like is it like normal -> normal 
+
+and most imp its all working on our hotspot ,,make it like deployable ,,how can we??
+
+
+
+
+//app folder files: fake payment,login,register code dismissed
+
+
+
+
+// // 🔥 NEW — FETCH FEATURED SEEDS
+  //   fetch(`${BASE_URL}/api/featuredSeeds`)
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       if (Array.isArray(data) && data.length > 0) {
+  //         setFeaturedSeeds(data);
+  //       } else {
+  //         setFeaturedSeeds(fallbackFeatured);
+  //       }
+  //     })
+  //     .catch(() => setFeaturedSeeds(fallbackFeatured));
+
+
+
+
+  //
+   const calculatedPrice =
+    selectedSize === "Half KG" ? Number(price) / 2 : Number(price);
+
+
+
+
+    //add to cart 
+    export const addToCart = async (req, res) => {
+  try {
+    const { user, product, quantity = 1, size, price } = req.body;
+
+    let cart = await Cart.findOne({ user });
+
+    if (!cart) {
+      cart = new Cart({
+        user,
+        products: [{ product, size, price, quantity }]
+      });
+    } else {
+      const item = cart.products.find(
+        (p) =>
+          p.product.toString() === product &&
+          p.size === size
+      );
+
+      if (item) {
+        item.quantity += quantity;
+      } else {
+        cart.products.push({ product, size, price, quantity });
+      }
+    }
+
+    await cart.save();
+
+    const updated = await Cart.findOne({ user })
+      .populate("products.product");
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+//line 324
+ const formatted = data.products
+      .filter(item => item.product) // 🔥 SAFETY
+      .map(item => ({
+        id: item.product._id,
+        name: item.product.name,
+        price: item.product.Price,
+        img: { uri: item.product.image },
+        qty: item.quantity,
+        size: item.size ?? "Full KG",
+      }));
+
+
+
+//export const getUserCart = async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.params.userId })
+      .populate("products.product");
+
+    res.json(cart || { products: [] });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+
+//now wht issue coming is 
+in bag tab ..like total bill is coming including every item,,whether we want toselect or not,,it just add gives total of all items coming in bag
+neither select,unselect button works on seeds,,instead its working on proceedto checkout button ,,
+//delete icon not working
+
+//and ya items added in wishlist from home,,when done added to bag arnt shown added in bag tab 
+
+
+//681 line useeffect
+  useEffect(() => {
+    const allSelected = {};
+    bag.forEach((item) => {
+      allSelected[item.id + item.size] = true;
+    });
+    setSelected(allSelected);
+  }, [bag]);
+
+
+
+
+
+//line 1198
+checkout
+ {selectedItems.length > 0 && (
+        <View style={styles.checkoutContainer}>
+          <TouchableOpacity
+            style={styles.checkoutBtn}
+            onPress={() => router.push("/checkout")}
+          >
+            <Text style={styles.checkoutTxt}>Proceed to Checkout</Text>
+          </TouchableOpacity>
+        </View>

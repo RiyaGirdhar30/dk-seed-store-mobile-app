@@ -1,3 +1,105 @@
+// {
+//   "expo": {
+//     "name": "DK_SEED_STORE_2.0",
+//     "slug": "dk-seed-store",
+//     "version": "1.0.0",
+//     "orientation": "portrait",
+//     "icon": "./assets/images/icon.png",
+//     "scheme": "dkseedstore20",
+//     "userInterfaceStyle": "automatic",
+//     "newArchEnabled": true,
+//     "ios": {
+//       "supportsTablet": true
+//     },
+//     "android": {
+//       "adaptiveIcon": {
+//         "backgroundColor": "#E6F4FE",
+//         "foregroundImage": "./assets/images/android-icon-foreground.png",
+//         "backgroundImage": "./assets/images/android-icon-background.png",
+//         "monochromeImage": "./assets/images/android-icon-monochrome.png"
+//       },
+//       "edgeToEdgeEnabled": true,
+//       "predictiveBackGestureEnabled": false,
+//       "package": "com.riyagirdhar.DK_SEED_STORE_2.x0"
+//     },
+//     "web": {
+//       "output": "static",
+//       "favicon": "./assets/images/favicon.png"
+//     },
+//     "plugins": [
+//       "expo-router",
+//       [
+//         "expo-splash-screen",
+//         {
+//           "image": "./assets/images/splash-icon.png",
+//           "imageWidth": 200,
+//           "resizeMode": "contain",
+//           "backgroundColor": "#ffffff",
+//           "dark": {
+//             "backgroundColor": "#000000"
+//           }
+//         }
+//       ],
+//       "expo-web-browser"
+//     ],
+//     "experiments": {
+//       "typedRoutes": true,
+//       "reactCompiler": true
+//     }
+//   }
+// }
+
+
+
+// {
+//   "expo": {
+//     "name": "DK_SEED_STORE_2.0",
+//     "slug": "dk-seed-store",
+//     "version": "1.0.0",
+//     "orientation": "portrait",
+//     "icon": "./assets/images/icon.png",
+//     "userInterfaceStyle": "automatic",
+
+//     "ios": {
+//       "supportsTablet": true
+//     },
+
+//     "android": {
+//       "adaptiveIcon": {
+//         "backgroundColor": "#E6F4FE",
+//         "foregroundImage": "./assets/images/android-icon-foreground.png"
+//       }
+//     },
+
+//     "web": {
+//       "output": "static",
+//       "favicon": "./assets/images/favicon.png"
+//     },
+
+//     "plugins": [
+//       "expo-router",
+//       [
+//         "expo-splash-screen",
+//         {
+//           "image": "./assets/images/splash-icon.png",
+//           "imageWidth": 200,
+//           "resizeMode": "contain",
+//           "backgroundColor": "#ffffff"
+//         }
+//       ],
+//       "expo-web-browser"
+//     ],
+
+//     "experiments": {
+//       "typedRoutes": true
+//     }
+//   }
+// }
+
+
+
+
+
 {
   "expo": {
     "name": "DK_SEED_STORE_2.0",
@@ -46,3 +148,6 @@
     }
   }
 }
+
+
+
