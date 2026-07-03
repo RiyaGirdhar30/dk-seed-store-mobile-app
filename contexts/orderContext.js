@@ -13,7 +13,7 @@ export const OrderProvider = ({ children }) => {
 
     try {
       const res = await fetch(
-        `http://172.21.112.206:5000/api/orders/user/${user.id}`,
+        `https://dk-seed-store-backend-1.onrender.com/api/orders/user/${user.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

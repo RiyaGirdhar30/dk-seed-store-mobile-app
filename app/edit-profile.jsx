@@ -22,7 +22,7 @@ export default function EditProfile() {
   const handleSave = async () => {
     try {
       const res = await fetch(
-        "http://172.21.112.206:5000/api/users/update-profile",
+        "https://dk-seed-store-backend-1.onrender.com/api/users/update-profile",
         {
           method: "PUT",
           headers: {

@@ -119,7 +119,7 @@ export default function ProductDetail() {
 
   /*Fetch Sizes */
   useEffect(() => {
-    fetch("http://172.21.112.206:5000/api/sizes")
+    fetch("https://dk-seed-store-backend-1.onrender.com/api/sizes")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {

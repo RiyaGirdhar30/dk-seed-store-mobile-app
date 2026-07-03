@@ -23,7 +23,7 @@ export default function PaymentScreen() {
     const createOrder = async () => {
       try {
         const res = await fetch(
-          "http://172.21.112.206:5000/api/payments/razorpay-order",
+          "https://dk-seed-store-backend-1.onrender.com/api/payments/razorpay-order",
           {
             method: "POST",
             headers: {
@@ -107,7 +107,7 @@ export default function PaymentScreen() {
 
         //VERIFY PAYMENT
         const verifyRes = await fetch(
-          "http://172.21.112.206:5000/api/payments/verify",
+          "https://dk-seed-store-backend-1.onrender.com/api/payments/verify",
           {
             method: "POST",
             headers: {
@@ -129,7 +129,7 @@ export default function PaymentScreen() {
         }
 
         // CREATE ORDER
-        const orderRes = await fetch("http://172.21.112.206:5000/api/orders", {
+        const orderRes = await fetch("https://dk-seed-store-backend-1.onrender.com/api/orders", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

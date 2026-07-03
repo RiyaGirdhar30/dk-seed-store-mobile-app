@@ -27,7 +27,7 @@ export default function OrderDetails() {
   // Fetch single order
   const fetchOrderDetails = async () => {
     try {
-      const res = await fetch(`http://172.21.112.206:5000/api/orders/${id}`);
+      const res = await fetch(`https://dk-seed-store-backend-1.onrender.com/api/orders/${id}`);
 
       const data = await res.json();
 
@@ -80,7 +80,7 @@ export default function OrderDetails() {
 
     try {
       const res = await fetch(
-        `http://172.21.112.206:5000/api/orders/cancel/${order._id}`,
+        `https://dk-seed-store-backend-1.onrender.com/api/orders/cancel/${order._id}`,
         { method: "PUT" },
       );
 

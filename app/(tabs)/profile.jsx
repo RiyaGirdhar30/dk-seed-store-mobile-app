@@ -55,7 +55,7 @@ const pickImage = async () => {
 
   try {
     const res = await fetch(
-      "http://172.21.112.206:5000/api/users/update-profile-photo",
+      "https://dk-seed-store-backend-1.onrender.com/api/users/update-profile-photo",
       {
         method: "PUT",
         headers: {
@@ -113,7 +113,7 @@ const pickImage = async () => {
 
         try {
           await fetch(
-            "http://172.21.112.206:5000/api/users/remove-profile-photo",
+            "https://dk-seed-store-backend-1.onrender.com/api/users/remove-profile-photo",
             {
               method: "DELETE",
               headers: {

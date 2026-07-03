@@ -33,7 +33,7 @@ export const UserProvider = ({ children }) => {
       if (!token) return;
 
       try {
-        const res = await fetch("http://172.21.112.206:5000/api/users/me", {
+        const res = await fetch("https://dk-seed-store-backend-1.onrender.com/api/users/me", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

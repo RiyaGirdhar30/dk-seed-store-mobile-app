@@ -22,7 +22,8 @@ import BrandLoader from "../components/BrandLoader";
 import { Animated, Easing } from "react-native";
 import { useRef } from "react";
 
-const BASE_URL = "http://172.21.112.206:5000";
+// const BASE_URL = "http://172.21.112.206:5000";
+const BASE_URL = "https://dk-seed-store-backend-1.onrender.com";
 
 export default function Home() {
   const router = useRouter();

@@ -19,7 +19,7 @@ export default function HelpCenter() {
   useEffect(() => {
     const fetchFAQs = async () => {
       try {
-        const res = await fetch("http://172.21.112.206:5000/api/help");
+        const res = await fetch("https://dk-seed-store-backend-1.onrender.com/api/help");
         const data = await res.json();
         setFaqs(data);
       } catch (err) {

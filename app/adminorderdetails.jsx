@@ -13,7 +13,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../contexts/userContext";
 
-const BASE_URL = "http://172.21.112.206:5000";
+// const BASE_URL = "http://172.21.112.206:5000";
+const BASE_URL = "https://dk-seed-store-backend-1.onrender.com";
 
 export default function AdminOrderDetails() {
   const router = useRouter();

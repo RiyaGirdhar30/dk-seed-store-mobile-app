@@ -129,7 +129,7 @@ export default function Checkout() {
               onPress: async () => {
                 try {
                   const res = await fetch(
-                    "http://172.21.112.206:5000/api/orders",
+                    "https://dk-seed-store-backend-1.onrender.com/api/orders",
                     {
                       method: "POST",
                       headers: {
